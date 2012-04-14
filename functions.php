@@ -1,7 +1,7 @@
 <?php
 /**
  * @package Read more link
- * @version 0.5
+ * @version 1.0
  */
 /*
 Plugin Name: Read more link
@@ -11,7 +11,7 @@ The preview will display the text of the post, up to the "[more...]" tag, while 
 When viewing the post detail, the tag is removed automatically and the original, full post is displayed.
 In the plugin settings you can easily configure the text of the "Read more..." link and the number of line breaks ("<br />" tags) displayed before the link.
 Author: Luca Dioli
-Version: 0.5
+Version: 1.0
 Author URI: http://lucadioli.com/
 */
 
@@ -54,14 +54,17 @@ function rmlGetOptions($key){
 function baw_settings_page() {
 	?>
 	<div class="wrap">
-		<h2>Read more link settings</h2>
-		<form method="post" action="options.php">
+		<h2>Read more link</h2>
+		<p style="width: 500px;">This plugin allows you to use a "[more...]" tag in a post to display a preview of it on the homepage. The preview will display the text of the post, up to the "[more...]" tag, while the rest will be replaced by a "Read more..." link (which redirects the user to the post detail). When viewing the post detail, the tag is removed automatically and the original, full post is displayed. In the plugin settings you can easily configure the text of the "Read more..." link and the number of line breaks ("&lt;br /&gt;" tags) displayed before the link.</p>
+		<br />
+		<h3>Settings</h3>
+		<form name="rmlForm" method="post" action="options.php">
 			<?php settings_fields( 'read-more-links-settings-group' ); ?>
 			<?php //do_settings( 'read-more-links-settings-group' ); ?>
 			<table class="form-table">
 				<tr valign="top">
 					<th scope="row">Read more link text:</th>
-					<td><input type="text" name="read_more_link_text" value="<?php echo rmlGetOptions('read_more_link_text'); ?>" /></td>
+					<td><input type="text" id="read_more_link_text" name="read_more_link_text" value="<?php echo rmlGetOptions('read_more_link_text'); ?>" /></td>
 				</tr>
 				<!--<tr valign="top">
 					<th scope="row">"&lt;br /&gt;" before link:</th>
@@ -78,11 +81,46 @@ function baw_settings_page() {
 					</td>
 				</tr>
 			</table>
+			<h3>Preview</h3>
+			<div style="border: 2px solid #cccccc;width: 500px; padding: 15px;">
+				<p>Lorem ipsum dolor sit amet, consectetur adipiscing elit. Pellentesque eget libero eget felis blandit molestie non molestie purus. Suspendisse ut mi sem, nec suscipit turpis. Fusce luctus massa id orci ullamcorper et lacinia felis dictum. Donec eu felis a felis venenatis pulvinar ut ut sapien. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus.</p>
+				<div id="read-more-link-brs">
+				<?php
+				if(rmlGetOptions('read_more_link_br') > 0){
+					for($i=0;$i<rmlGetOptions('read_more_link_br');$i++){
+						echo '<br />';
+					}
+				}
+				?>
+				</div>
+				<a href="javascript:void();" id="read-more-link-link"><?php echo rmlGetOptions('read_more_link_text'); ?></a>
+			</div>
 			<p class="submit">
 				<input type="submit" class="button-primary" value="<?php _e('Save Changes') ?>" />
 			</p>
 		</form>
 	</div>
+	<script type="text/javascript">
+		document.rmlForm.read_more_link_text.onkeyup = function (){
+			var rmlLink = document.getElementById('read-more-link-link');
+			rmlLink.textContent = this.value;
+		};
+		
+		var rmlBrs = document.getElementById('read-more-link-brs');
+		for(i=0;i<document.rmlForm.read_more_link_br.length;i++){
+			document.rmlForm.read_more_link_br[i].onclick = function (){
+				var n = this.value;
+				var rmlBrs = document.getElementById('read-more-link-brs');
+				var html = '';
+				if(n > 0){
+					for(i=0;i<n;i++){
+						html += '<br />';
+					}
+				}
+				rmlBrs.innerHTML = html;
+			};
+		}
+	</script>
 	<?php 
 }
 

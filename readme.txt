@@ -15,8 +15,16 @@ In the plugin settings you can easily configure the text of the "Read more..." l
 
 == Changelog ==
 
-26.03.12
-- Plugin image added!
+= 1.0 - 14.04.12 =
+* Settings page updated
+* Added a screenshot
 
-24.03.12
-- First relase!
+= 0.5 - 26.03.12 =
+* Plugin image added!
+
+= 0.1 - 24.03.12 =
+* First relase!
+
+== Screenshots ==
+
+1. Here's a screenshot of the settings page
