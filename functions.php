@@ -1,7 +1,7 @@
 <?php
 /**
  * @package Read more link
- * @version 1.0
+ * @version 1.2
  */
 /*
 Plugin Name: Read more link
@@ -11,15 +11,25 @@ The preview will display the text of the post, up to the "[more...]" tag, while 
 When viewing the post detail, the tag is removed automatically and the original, full post is displayed.
 In the plugin settings you can easily configure the text of the "Read more..." link and the number of line breaks ("<br />" tags) displayed before the link.
 Author: Luca Dioli
-Version: 1.0
+Version: 1.2
 Author URI: http://lucadioli.com/
 */
 
 $options = array(
 	'read_more_link_text' => 'Read more...',
-	'read_more_link_br' => 2
+	'read_more_link_br' => 2,
+	'read_more_link_home' => true,
+	'read_more_link_search' => true,
+	'read_more_link_tag' => true,
+	'read_more_link_sticky' => true
 );
 
+$rdmPages = array(
+	'home' => 'Homepage',
+	'search' => 'Search result pages',
+	'tag' => 'Tag pages',
+	'sticky' => 'Sticky posts'
+);
 
 /* Settings functions */
 
@@ -30,19 +40,18 @@ function your_plugin_settings_link($links) {
   return $links; 
 }
 
-function baw_create_menu() {
-	//create new top-level menu
-	//add_menu_page('Read more link Settings', 'Read more link', 'administrator', __FILE__, 'baw_settings_page',plugins_url('/images/icon.png', __FILE__));
-
-	add_options_page('Read more link Settings', 'Read more link', 'administrator', __FILE__, 'baw_settings_page');
-	
-	//call register settings function
+function rml_create_menu() {
+	add_options_page('Read more link Settings', 'Read more link', 'administrator', __FILE__, 'rml_settings_page');
 	add_action( 'admin_init', 'register_mysettings' );
 }
 
 function register_mysettings() {
 	register_setting( 'read-more-links-settings-group', 'read_more_link_text' );
 	register_setting( 'read-more-links-settings-group', 'read_more_link_br' );
+	global $rdmPages;
+	foreach($rdmPages as $id => $name){
+		register_setting( 'read-more-links-settings-group', 'read_more_link_'.$id );
+	}
 }
 
 function rmlGetOptions($key){
@@ -51,7 +60,7 @@ function rmlGetOptions($key){
 	else return get_option($key);
 }
 
-function baw_settings_page() {
+function rml_settings_page() {
 	?>
 	<div class="wrap">
 		<h2>Read more link</h2>
@@ -62,6 +71,15 @@ function baw_settings_page() {
 			<?php settings_fields( 'read-more-links-settings-group' ); ?>
 			<?php //do_settings( 'read-more-links-settings-group' ); ?>
 			<table class="form-table">
+				<tr valign="top">
+					<th scope="row">Pages:</th>
+					<td>
+						<?php 
+						global $rdmPages;
+						foreach($rdmPages as $id => $name) echo '<input type="checkbox" name="read_more_link_'.$id.'" value="'.$id.'"'.((rmlGetOptions('read_more_link_'.$id)) ? ' checked="checked"' : '').' /> '.$name.'<br />'; 
+						?>
+					</td>
+				</tr>
 				<tr valign="top">
 					<th scope="row">Read more link text:</th>
 					<td><input type="text" id="read_more_link_text" name="read_more_link_text" value="<?php echo rmlGetOptions('read_more_link_text'); ?>" /></td>
@@ -77,7 +95,7 @@ function baw_settings_page() {
 				<tr valign="top">
 					<th scope="row">"&lt;br /&gt;" before link:</th>
 					<td>
-						<?php for($i=0;$i<4;$i++) echo $i.' <input type="radio" name="read_more_link_br" value="'.$i.'"'.((rmlGetOptions('read_more_link_br') == $i) ? ' checked="checked"' : '').' /><br />'; ?>
+						<?php for($i=0;$i<4;$i++) echo '<input type="radio" name="read_more_link_br" value="'.$i.'"'.((rmlGetOptions('read_more_link_br') == $i) ? ' checked="checked"' : '').' /> '.$i.'<br />'; ?>
 					</td>
 				</tr>
 			</table>
@@ -129,7 +147,31 @@ function baw_settings_page() {
 
 function add_more_link($content){
 	$tag = "[more...]";
-	if(is_home()){
+	$attach = false;
+	global $rdmPages;
+	foreach($rdmPages as $id => $name){
+		$state = get_option('read_more_link_'.$id);
+		if($state){
+			switch($id){
+				case 'home':
+					if(is_home()) $attach = true;
+				break;
+				case 'search':
+					if(is_search()) $attach = true;
+				break;
+				case 'tag':
+					if(is_tag()) $attach = true;
+				break;
+				case 'sticky':
+					if(is_sticky()) $attach = true;
+				break;
+			}
+		}
+		else if($id == 'sticky' && is_sticky()){
+			$attach = false;
+		}
+	}
+	if($attach){
 		$pos = stripos($content,$tag);
 		if ($pos !== false) {
 			$content = substr($content,0,$pos);
@@ -156,6 +198,6 @@ function get_more_link(){
 
 
 
-add_action('admin_menu', 'baw_create_menu');
+add_action('admin_menu', 'rml_create_menu');
 add_filter('the_content','add_more_link');
 add_filter("plugin_action_links_".plugin_basename(__FILE__), 'your_plugin_settings_link' );
