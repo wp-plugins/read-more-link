@@ -15,6 +15,9 @@ In the plugin settings you can easily configure the text of the "Read more..." l
 
 == Changelog ==
 
+= 1.3 - 17.04.12 =
+* Fixed bug on default settings
+
 = 1.2 - 15.04.12 =
 * Added "Pages" setting that lets user choose in which page display "read more" link
 * Updated screenshot

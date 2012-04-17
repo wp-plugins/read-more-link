@@ -1,7 +1,7 @@
 <?php
 /**
  * @package Read more link
- * @version 1.2
+ * @version 1.3
  */
 /*
 Plugin Name: Read more link
@@ -11,7 +11,7 @@ The preview will display the text of the post, up to the "[more...]" tag, while 
 When viewing the post detail, the tag is removed automatically and the original, full post is displayed.
 In the plugin settings you can easily configure the text of the "Read more..." link and the number of line breaks ("<br />" tags) displayed before the link.
 Author: Luca Dioli
-Version: 1.2
+Version: 1.3
 Author URI: http://lucadioli.com/
 */
 
@@ -55,6 +55,7 @@ function register_mysettings() {
 }
 
 function rmlGetOptions($key){
+	global $options;
 	$o = get_option($key);
 	if(empty($o)) return $options[$key];
 	else return get_option($key);
