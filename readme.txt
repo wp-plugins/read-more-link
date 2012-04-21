@@ -15,6 +15,9 @@ In the plugin settings you can easily configure the text of the "Read more..." l
 
 == Changelog ==
 
+= 1.4 - 21.04.12 =
+* Fixed bug when closing tags to add read more link
+
 = 1.3 - 17.04.12 =
 * Fixed bug on default settings
 

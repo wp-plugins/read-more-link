@@ -1,7 +1,7 @@
 <?php
 /**
  * @package Read more link
- * @version 1.3
+ * @version 1.4
  */
 /*
 Plugin Name: Read more link
@@ -11,7 +11,7 @@ The preview will display the text of the post, up to the "[more...]" tag, while 
 When viewing the post detail, the tag is removed automatically and the original, full post is displayed.
 In the plugin settings you can easily configure the text of the "Read more..." link and the number of line breaks ("<br />" tags) displayed before the link.
 Author: Luca Dioli
-Version: 1.3
+Version: 1.4
 Author URI: http://lucadioli.com/
 */
 
@@ -175,7 +175,7 @@ function add_more_link($content){
 	if($attach){
 		$pos = stripos($content,$tag);
 		if ($pos !== false) {
-			$content = substr($content,0,$pos);
+			$content = closetags(substr($content,0,$pos));
 			$content .= get_more_link();
 		}
 	}
@@ -193,11 +193,29 @@ function get_more_link(){
 			$br .= '<br />';
 		}
 	}
-	
 	return $br.'<a href="'.get_permalink().'" title="'.$link.'">'.$link.'</a>';
 }
 
-
+function closetags ( $html ){
+	preg_match_all ( "#<([a-z]+)( .*)?(?!/)>#iU", $html, $result );
+	$openedtags = $result[1];
+	preg_match_all ( "#</([a-z]+)>#iU", $html, $result );
+	$closedtags = $result[1];
+	$len_opened = count ( $openedtags );
+	if( count ( $closedtags ) == $len_opened ){
+		return $html;
+	}
+	$openedtags = array_reverse ( $openedtags );
+	for( $i = 0; $i < $len_opened; $i++ ){
+		if ( !in_array ( $openedtags[$i], $closedtags ) ){
+			$html .= "</" . $openedtags[$i] . ">";
+		}
+		else{
+			unset ( $closedtags[array_search ( $openedtags[$i], $closedtags)] );
+		}
+	}
+	return $html;
+}
 
 add_action('admin_menu', 'rml_create_menu');
 add_filter('the_content','add_more_link');
