@@ -1,7 +1,7 @@
 <?php
 /**
  * @package Read more link
- * @version 1.4
+ * @version 1.5
  */
 /*
 Plugin Name: Read more link
@@ -11,7 +11,7 @@ The preview will display the text of the post, up to the "[more...]" tag, while 
 When viewing the post detail, the tag is removed automatically and the original, full post is displayed.
 In the plugin settings you can easily configure the text of the "Read more..." link and the number of line breaks ("<br />" tags) displayed before the link.
 Author: Luca Dioli
-Version: 1.4
+Version: 1.5
 Author URI: http://lucadioli.com/
 */
 
@@ -21,13 +21,15 @@ $options = array(
 	'read_more_link_home' => true,
 	'read_more_link_search' => true,
 	'read_more_link_tag' => true,
-	'read_more_link_sticky' => true
+	'read_more_link_sticky' => true,
+	'read_more_link_category' => true
 );
 
 $rdmPages = array(
 	'home' => 'Homepage',
 	'search' => 'Search result pages',
 	'tag' => 'Tag pages',
+	'category' => 'Category pages',
 	'sticky' => 'Sticky posts'
 );
 
@@ -159,6 +161,9 @@ function add_more_link($content){
 				break;
 				case 'search':
 					if(is_search()) $attach = true;
+				break;
+				case 'category':
+					if(is_category()) $attach = true;
 				break;
 				case 'tag':
 					if(is_tag()) $attach = true;

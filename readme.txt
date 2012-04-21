@@ -15,6 +15,10 @@ In the plugin settings you can easily configure the text of the "Read more..." l
 
 == Changelog ==
 
+= 1.5 - 21.04.12 =
+* Added "Category pages" setting
+* Updated screenshot
+
 = 1.4 - 21.04.12 =
 * Fixed bug when closing tags to add read more link
 
